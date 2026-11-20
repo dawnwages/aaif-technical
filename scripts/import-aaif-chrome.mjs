@@ -34,7 +34,10 @@ function absolutize(html) {
     .replace(/_r_[0-9a-z]+_/gi, '_r_x_')
     // Inline styles that hold an animation's current frame (opacity, transform) differ
     // from one capture to the next; drop them so only real changes show up.
-    .replace(/ style="[^"]*\b(?:opacity|transform|translate|scale)\b[^"]*"/g, '');
+    .replace(/ style="[^"]*\b(?:opacity|transform|translate|scale)\b[^"]*"/g, '')
+    // aaif.io's HubSpot script adds tracking parameters to some links on each page load.
+    .replace(/([?&])(?:__hstc|__hssc|__hsfp|_hsenc|_hsmi|utm_[a-z]+)=[^&"]*(?:&amp;|&)?/g, '$1')
+    .replace(/[?&](?=")/g, '');
 }
 
 // Header, closed. The wrapper is the fixed bar holding the Linux Foundation strip and the header.
