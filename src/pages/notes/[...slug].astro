@@ -1,6 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import DetailHero from '../../components/DetailHero.astro';
+import Pill from '../../components/Pill.astro';
 import { noteLabels, wgName } from '../../data/working-groups';
 import { url, formatDate } from '../../lib/url';
 
@@ -15,43 +17,29 @@ const { Content } = await render(note);
 const label = noteLabels[d.label];
 ---
 <Base title={d.title} description={d.description}>
-  <article>
-    <header class="page-hero">
-      <div class="container">
-        <p class="eyebrow"><a href={url('/notes/')}>Technical Notes</a> / <a href={url(`/wg/${d.wg}/`)}>{wgName(d.wg)}</a></p>
-        <h1>{d.title}</h1>
-        <p class="lead">{d.description}</p>
-        <ul class="chips">
-          <li class={`chip chip-${d.label}`}>{label.name}</li>
-          {d.example && <li class="chip chip-example">Example</li>}
-          {d.tags.map((t) => <li class="chip">{t}</li>)}
-        </ul>
-        <div class="meta byline">
-          <span>By {d.authors.map((a) => `${a.name} (${a.org})`).join(', ')}</span>
-          <span>Published <time datetime={d.published.toISOString()}>{formatDate(d.published)}</time></span>
-          {d.updated && <span>Updated <time datetime={d.updated.toISOString()}>{formatDate(d.updated)}</time></span>}
-        </div>
-      </div>
-    </header>
+  <DetailHero
+    title={d.title}
+    crumbs={[{ label: 'Technical Notes', href: url('/notes/') }, { label: wgName(d.wg), href: url(`/wg/${d.wg}/`) }]}
+  >
+    <span>{d.authors.map((a) => `${a.name} (${a.org})`).join(', ')}</span>
+    <div class="w-1 h-1 bg-neutral-300 rounded-full shrink-0"></div>
+    <span>{formatDate(d.published)}</span>
+    {d.updated && <><div class="w-1 h-1 bg-neutral-300 rounded-full shrink-0"></div><span>Updated {formatDate(d.updated)}</span></>}
+  </DetailHero>
 
-    <div class="container body">
-      <div class="prose"><Content /></div>
-      <aside>
-        <div class="notice">
-          <p><strong>{label.name}.</strong> {label.help}</p>
-          <p><a href={d.source}>Source in the working group repository</a></p>
-          {d.discussion && <p><a href={d.discussion}>Join the discussion</a></p>}
+  <div class="section-container pb-16">
+    <div class="flex justify-center">
+      <article class="w-full max-w-205 mx-auto lg:mx-0 lg:pt-16 pt-6 flex flex-col gap-y-10">
+        <div class="w-full flex flex-col gap-6 rounded-2xl border border-neutral-200 bg-white px-4 py-6 lg:px-10 lg:py-8">
+          <div class="flex items-center gap-2 text-body-sm text-text">
+            <Pill left={label.name} right={wgName(d.wg)} accent={d.label === 'reviewed'} />
+          </div>
+          <p class="text-body-sm text-text">{label.help} <a class="hover:underline text-coral-500" href={d.source}>Source in the working group repository</a>{d.discussion && <> · <a class="hover:underline text-coral-500" href={d.discussion}>Join the discussion</a></>}</p>
         </div>
-      </aside>
+        <div class="prose dark:prose-invert prose prose-neutral max-w-none prose-headings:font-medium marker:text-coral-500 prose-headings:tracking-tight prose-a:text-coral-500 prose-a:no-underline prose-a:break-words hover:prose-a:underline">
+          <Content />
+        </div>
+      </article>
     </div>
-  </article>
+  </div>
 </Base>
-
-<style>
-  .byline { margin-top: var(--space-3); font-size: var(--step-0); }
-  .eyebrow a { color: inherit; }
-  .body { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: var(--space-8); padding-top: var(--space-6); }
-  aside { position: sticky; top: 100px; align-self: start; }
-  aside p:last-child { margin: 0; }
-  @media (max-width: 960px) { .body { grid-template-columns: 1fr; } aside { position: static; order: -1; } }
-</style>

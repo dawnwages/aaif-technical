@@ -1,6 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import IndexHero from '../components/IndexHero.astro';
+import Button from '../components/Button.astro';
 import NoteCard from '../components/NoteCard.astro';
 import SkillCard from '../components/SkillCard.astro';
 import { url } from '../lib/url';
@@ -9,38 +11,30 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft))
   .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
 const skills = (await getCollection('skills')).sort((a, b) => b.data.added.valueOf() - a.data.added.valueOf());
 ---
-<Base title="AAIF Technical">
-  <section class="page-hero">
-    <div class="container">
-      <p class="eyebrow">Resources</p>
-      <h1>Technical work from the AAIF working groups</h1>
-      <p class="lead">Technical notes written and published by the working groups, and a catalog of agent skills you can find, check and reuse.</p>
-      <p class="actions">
-        <a class="btn btn-coral" href={url('/notes/')}>Read technical notes</a>
-        <a class="btn btn-outline" href={url('/skills/')}>Browse the skills catalog</a>
-      </p>
+<Base title="Technical" description="Technical notes and the skills catalog from the AAIF working groups.">
+  <IndexHero eyebrow="Resources" title="AAIF Technical">
+    <div class="flex flex-col gap-y-6">
+      <p class="text-body-md text-text max-w-2xl">Technical notes written and published by the working groups, and a catalog of agent skills you can find, check and reuse.</p>
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-6">
+        <Button href={url('/notes/')}>Technical Notes</Button>
+        <Button href={url('/skills/')}>Skills Catalog</Button>
+      </div>
     </div>
-  </section>
+  </IndexHero>
 
-  <section class="section">
-    <div class="container">
-      <div class="head"><h2>Latest technical notes</h2><a href={url('/notes/')}>All notes</a></div>
-      <div class="grid">{notes.slice(0, 6).map((n) => <NoteCard note={n} />)}</div>
-    </div>
-  </section>
+  <div class="w-full py-21">
+    <div class="section-container w-full flex flex-col gap-y-10 items-start">
+      <div class="w-full flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="text-body-sm text-black uppercase font-semibold">Latest technical notes</h2>
+        <Button href={url('/notes/')}>All notes</Button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 w-full">{notes.slice(0, 6).map((n) => <NoteCard note={n} />)}</div>
 
-  <section class="section alt">
-    <div class="container">
-      <div class="head"><h2>Skills catalog</h2><a href={url('/skills/')}>All skills</a></div>
-      <div class="grid">{skills.slice(0, 6).map((s) => <SkillCard skill={s} />)}</div>
+      <div class="w-full flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between mt-10">
+        <h2 class="text-body-sm text-black uppercase font-semibold">Skills catalog</h2>
+        <Button href={url('/skills/')}>All skills</Button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 w-full">{skills.slice(0, 6).map((s) => <SkillCard skill={s} />)}</div>
     </div>
-  </section>
+  </div>
 </Base>
-
-<style>
-  .actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
-  .head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); margin-bottom: var(--space-4); }
-  .head h2 { margin: 0; }
-  .head a { font-weight: 600; text-decoration-color: var(--aaif-coral); text-underline-offset: 4px; }
-  .alt { background: var(--aaif-surface); }
-</style>

@@ -1,0 +1,9 @@
+---
+// aaif.io's two-part tag pill (white | black), as on blog cards: "AAIF | Agent2Agent".
+interface Props { left: string; right?: string; accent?: boolean; }
+const { left, right, accent = false } = Astro.props;
+---
+<div class="min-w-0 flex items-center [&>div]:flex [&>div]:items-center [&>div]:h-7 [&>div]:px-2 text-body-xs border border-neutral-200 rounded-lg overflow-hidden">
+  <div class={accent ? 'bg-white shrink-0 text-coral-500' : 'bg-white shrink-0'}>{left}</div>
+  {right && <div class="text-white bg-black min-w-0"><span class="truncate">{right}</span></div>}
+</div>

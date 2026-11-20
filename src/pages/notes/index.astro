@@ -1,33 +1,36 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import IndexHero from '../../components/IndexHero.astro';
+import Button from '../../components/Button.astro';
 import NoteCard from '../../components/NoteCard.astro';
-import { workingGroups, noteLabels } from '../../data/working-groups';
+import { workingGroups } from '../../data/working-groups';
 import { url } from '../../lib/url';
 
 const notes = (await getCollection('notes', ({ data }) => !data.draft))
   .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
 const activeWgs = workingGroups.filter((w) => notes.some((n) => n.data.wg === w.slug));
+const chip = 'h-7 flex items-center justify-center px-2 py-1 bg-neutral-50 border border-neutral-200 text-black text-body-sm rounded-lg shrink-0 whitespace-nowrap hover:text-coral-500';
 ---
 <Base title="Technical Notes" description="Technical notes written and published by the AAIF working groups.">
-  <section class="page-hero">
-    <div class="container">
-      <p class="eyebrow">Resources</p>
-      <h1>Technical Notes</h1>
-      <p class="lead">Written and published by the AAIF working groups. Each note shows how far it has been reviewed.</p>
-      <ul class="chips legend">
-        {Object.entries(noteLabels).map(([k, v]) => <li class={`chip chip-${k}`} title={v.help}>{v.name}</li>)}
-      </ul>
-    </div>
-  </section>
-  <section class="section">
-    <div class="container">
-      <nav class="filters" aria-label="Working groups">
-        {activeWgs.map((w) => <a class="chip" href={url(`/wg/${w.slug}/`)}>{w.name}</a>)}
-      </nav>
-      {notes.length ? <div class="grid">{notes.map((n) => <NoteCard note={n} />)}</div> : <p>No notes published yet.</p>}
-    </div>
-  </section>
-</Base>
+  <IndexHero eyebrow="Technical Notes" title="AAIF Technical Notes">
+    <p class="text-body-md text-text max-w-2xl">Written and published by the AAIF working groups. Each note shows how far it has been reviewed: Working draft, Guidance, or Reviewed.</p>
+  </IndexHero>
 
-<style>.legend { margin-top: var(--space-3); }</style>
+  <div class="w-full py-21">
+    <div class="section-container w-full flex flex-col gap-y-10 items-start">
+      <div class="w-full flex flex-col gap-6 rounded-2xl border border-neutral-200 bg-white px-4 py-6 lg:px-10 lg:py-8 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="whitespace-pre-line heading text-body-md lg:text-body-lg text-text max-w-2xl">Publish your working group's technical work, <span class="text-coral-500">straight from a pull request.</span></h2>
+        <Button href="https://github.com/aaif" external>How to publish</Button>
+      </div>
+      {activeWgs.length > 0 && (
+        <nav aria-label="Working groups" class="flex flex-wrap items-center gap-2">
+          {activeWgs.map((w) => <a class={chip} href={url(`/wg/${w.slug}/`)}>{w.name}</a>)}
+        </nav>
+      )}
+      {notes.length
+        ? <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 w-full">{notes.map((n) => <NoteCard note={n} />)}</div>
+        : <p class="text-body-md text-text">No notes published yet.</p>}
+    </div>
+  </div>
+</Base>

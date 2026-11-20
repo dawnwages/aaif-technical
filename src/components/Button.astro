@@ -1,0 +1,11 @@
+---
+// aaif.io's button: white, bordered, with the coral arrow icon and hover swirl.
+import icon from '../aaif/button-icon.html?raw';
+interface Props { href: string; external?: boolean; }
+const { href, external = false } = Astro.props;
+---
+<a
+  class="inline-flex items-center justify-center gap-2.5 font-semibold text-body-sm transition-colors cursor-pointer max-w-full bg-white text-text border border-neutral-200 rounded-lg min-h-[3.625rem] px-[1.125rem] py-1 whitespace-normal text-left group w-fit shrink-0"
+  href={href}
+  {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+><slot /><Fragment set:html={icon} /></a>

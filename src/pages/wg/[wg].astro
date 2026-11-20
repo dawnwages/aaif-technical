@@ -1,6 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import IndexHero from '../../components/IndexHero.astro';
+import Button from '../../components/Button.astro';
 import NoteCard from '../../components/NoteCard.astro';
 import { workingGroups } from '../../data/working-groups';
 import { url } from '../../lib/url';
@@ -14,17 +16,17 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft && data.wg
   .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
 ---
 <Base title={`${wg.name} technical notes`} description={`Technical notes from the AAIF ${wg.name} working group.`}>
-  <section class="page-hero">
-    <div class="container">
-      <p class="eyebrow"><a href={url('/notes/')}>Technical Notes</a></p>
-      <h1>{wg.name}</h1>
-      <p class="lead">Technical notes published by the {wg.name} working group. <a href={wg.repo}>See the group's repository</a>.</p>
+  <IndexHero eyebrow="Technical Notes" title={wg.name}>
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-6">
+      <Button href={url('/notes/')}>All technical notes</Button>
+      <Button href={wg.repo} external>Working group repository</Button>
     </div>
-  </section>
-  <section class="section">
-    <div class="container">
-      {notes.length ? <div class="grid">{notes.map((n) => <NoteCard note={n} />)}</div> : <p>This group hasn't published a note yet.</p>}
+  </IndexHero>
+  <div class="w-full py-21">
+    <div class="section-container w-full flex flex-col gap-y-10 items-start">
+      {notes.length
+        ? <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 w-full">{notes.map((n) => <NoteCard note={n} />)}</div>
+        : <p class="text-body-md text-text">This group hasn't published a note yet.</p>}
     </div>
-  </section>
+  </div>
 </Base>
-<style>.eyebrow a, .lead a { color: inherit; }</style>

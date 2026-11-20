@@ -1,47 +1,40 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import IndexHero from '../../components/IndexHero.astro';
+import Button from '../../components/Button.astro';
 import SkillCard from '../../components/SkillCard.astro';
 import { skillStatuses } from '../../data/working-groups';
 
 const skills = (await getCollection('skills')).sort((a, b) => a.data.name.localeCompare(b.data.name));
+const chip = 't-filter h-7 flex items-center justify-center px-2 py-1 bg-neutral-50 border border-neutral-200 text-black text-body-sm rounded-lg shrink-0 whitespace-nowrap cursor-pointer';
 ---
 <Base title="Skills Catalog" description="A vendor-neutral catalog of agent skills in the Agent Skills format, with review status and maintainers.">
-  <section class="page-hero">
-    <div class="container">
-      <p class="eyebrow">Resources</p>
-      <h1>Skills Catalog</h1>
-      <p class="lead">Agent skills in the Agent Skills format. Every entry links to its source and shows who maintains it and how far it has been reviewed.</p>
-      <div class="notice">
-        <strong>Check before you run.</strong> Skills can include scripts and instructions your agent will follow. A <strong>Listed</strong> skill has passed automated checks only and has not been reviewed by AAIF or a working group.
+  <IndexHero eyebrow="Skills Catalog" title="AAIF Skills Catalog">
+    <p class="text-body-md text-text max-w-2xl">Agent skills in the Agent Skills format. Every entry links to its source and shows who maintains it and how far it has been reviewed.</p>
+  </IndexHero>
+
+  <div class="w-full py-21">
+    <div class="section-container w-full flex flex-col gap-y-10 items-start">
+      <div class="w-full flex flex-col gap-6 rounded-2xl border border-neutral-200 bg-white px-4 py-6 lg:px-10 lg:py-8 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="whitespace-pre-line heading text-body-md lg:text-body-lg text-text max-w-2xl"><span class="text-coral-500">Check before you run.</span> Skills can include scripts your agent will follow. A Listed skill has passed automated checks only.</h2>
+        <Button href="https://github.com/aaif" external>Add a skill</Button>
       </div>
-    </div>
-  </section>
-  <section class="section">
-    <div class="container">
-      <div class="filters" role="group" aria-label="Filter by review status">
-        <button class="chip active" data-filter="all">All</button>
-        {Object.entries(skillStatuses).map(([k, v]) => <button class="chip" data-filter={k} title={v.help}>{v.name}</button>)}
+      <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Filter by review status">
+        <button type="button" class={chip} data-filter="all" aria-pressed="true">All</button>
+        {Object.entries(skillStatuses).map(([k, v]) => <button type="button" class={chip} data-filter={k} aria-pressed="false" title={v.help}>{v.name}</button>)}
       </div>
-      <div class="grid" id="skills">{skills.map((s) => <SkillCard skill={s} />)}</div>
-      <p class="submit">To add a skill, open a pull request with one YAML file in <code>src/content/skills/</code>. See the template in the repository.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 w-full" id="skills">{skills.map((s) => <SkillCard skill={s} />)}</div>
     </div>
-  </section>
+  </div>
 </Base>
 
 <script>
   const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
-  const cards = document.querySelectorAll<HTMLElement>('#skills [data-status]');
+  const cards = document.querySelectorAll<HTMLElement>('#skills > [data-status]');
   buttons.forEach((b) => b.addEventListener('click', () => {
-    buttons.forEach((x) => x.classList.toggle('active', x === b));
+    buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
     const f = b.dataset.filter;
     cards.forEach((c) => { c.hidden = f !== 'all' && c.dataset.status !== f; });
   }));
 </script>
-
-<style>
-  .notice { margin-top: var(--space-4); max-width: 46rem; }
-  button.chip { cursor: pointer; font-family: inherit; }
-  button.chip.active { background: var(--aaif-ink); color: var(--aaif-paper); border-color: var(--aaif-ink); }
-  .submit { margin-top: var(--space-6); color: var(--aaif-muted); }
-</style>

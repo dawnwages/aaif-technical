@@ -1,12 +1,14 @@
 ---
-import '../styles/global.css';
+import '../aaif/aaif.css';
+import '../styles/site.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { url } from '../lib/url';
 
 interface Props { title: string; description?: string; }
 const { title, description = 'Technical notes and the skills catalog from the Agentic AI Foundation working groups.' } = Astro.props;
-const fullTitle = title === 'AAIF Technical' ? title : `${title} | Agentic AI Foundation (AAIF)`;
+// Same title pattern as aaif.io: "Page - Agentic AI Foundation (AAIF)".
+const fullTitle = `${title} - Agentic AI Foundation (AAIF)`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 <!doctype html>
@@ -20,16 +22,17 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="canonical" href={canonical} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Agentic AI Foundation (AAIF)" />
+    <link rel="icon" href="https://aaif.io/favicon.ico" />
     <link rel="alternate" type="application/rss+xml" title="AAIF Technical Notes" href={url('/rss.xml')} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <a class="visually-hidden" href="#main">Skip to content</a>
+    <a class="t-skip" href="#main">Skip to content</a>
     <Header />
-    <main id="main"><slot /></main>
+    <main id="main" class="min-h-screen"><slot /></main>
     <Footer />
   </body>
 </html>

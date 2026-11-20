@@ -1,21 +1,28 @@
 ---
+// A note card in the layout of aaif.io's blog cards (without the cover image).
 import type { CollectionEntry } from 'astro:content';
+import Pill from './Pill.astro';
 import { noteLabels, wgName } from '../data/working-groups';
 import { url, formatDate } from '../lib/url';
 interface Props { note: CollectionEntry<'notes'>; }
 const { note } = Astro.props;
 const d = note.data;
+const href = url(`/notes/${note.id}/`);
 ---
-<a class="card" href={url(`/notes/${note.id}/`)}>
-  <ul class="chips">
-    <li class={`chip chip-${d.label}`}>{noteLabels[d.label].name}</li>
-    <li class="chip">{wgName(d.wg)}</li>
-    {d.example && <li class="chip chip-example">Example</li>}
-  </ul>
-  <h3>{d.title}</h3>
-  <p>{d.description}</p>
-  <div class="meta">
-    <span>{d.authors.map((a) => a.name).join(', ')}</span>
-    <time datetime={d.published.toISOString()}>{formatDate(d.published)}</time>
-  </div>
-</a>
+<div>
+  <article class="group flex flex-col h-full">
+    <div class="flex flex-col gap-y-3 p-4 bg-white rounded-lg border border-neutral-200 flex-1">
+      <div class="flex items-center gap-2 text-body-sm text-text">
+        <Pill left={noteLabels[d.label].name} right={wgName(d.wg)} accent={d.label === 'reviewed'} />
+        {d.example && <><div class="w-1 h-1 bg-text rounded-full shrink-0"></div><div class="h-7 flex items-center justify-center px-2 py-1 bg-neutral-50 border border-neutral-200 text-black text-body-sm rounded-lg shrink-0 whitespace-nowrap">Example</div></>}
+      </div>
+      <a class="hover:underline" href={href}><h6 class="text-h6 font-normal text-neutral-500 line-clamp-3">{d.title}</h6></a>
+      <p class="text-body-sm text-text line-clamp-2">{d.description}</p>
+      <div class="mt-auto pt-1 flex items-center gap-2 text-body-xs text-black">
+        <span class="font-medium">{d.authors.map((a) => a.name).join(', ')}</span>
+        <div class="w-1 h-1 bg-text rounded-full shrink-0"></div>
+        <span class="shrink-0">{formatDate(d.published)}</span>
+      </div>
+    </div>
+  </article>
+</div>

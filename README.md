@@ -54,18 +54,12 @@ The output in `dist/` is plain static files, so LF IT can also host it behind aa
 
 ## Matching aaif.io
 
-| What | Where | Status |
-|---|---|---|
-| Navigation, footer links, legal text | `src/data/site.ts` | Copied from aaif.io, November 2026 |
-| Colors, type scale, spacing | `src/styles/tokens.css` | From aaif.io/brand (black, white, coral #FF702D, lilac #B6B0D0) |
-| Typeface | `src/layouts/Base.astro` | Instrument Sans from Google Fonts |
-| Header and footer markup | `src/components/Header.astro`, `Footer.astro` | Built to match; not yet compared against the live CSS |
+The header, navigation menus, mobile menu and footer are aaif.io's own markup, and the site uses aaif.io's compiled CSS, captured from the live site on November 20, 2026. Page bodies (heroes, cards, tag pills, buttons and article text) are built from the same classes aaif.io uses on its blog, so the change between aaif.io and this site is close to invisible.
 
-aaif.io runs on Next.js with Sanity. For a seamless match, ask the aaif.io maintainers for either:
-- their header and footer React components: add `@astrojs/react`, then render them in `Base.astro` in place of `Header.astro` and `Footer.astro`; or
-- the compiled CSS values for the header, footer and body: update `tokens.css`.
-
-When the site goes live, add Technical Notes (`/technical/notes/`) and Skills Catalog (`/technical/skills/`) to the Resources menu on aaif.io, so both sites share one navigation.
+- Technical Notes and Skills Catalog are added to the Resources menu and to the footer's Resources column. Add the same two links to aaif.io so both sites share one navigation.
+- The menus open and close with a small script in `src/components/Header.astro`, standing in for aaif.io's React code. The mobile About and Resources items open a list of their links.
+- To refresh after aaif.io changes its header or footer, see `aaif-capture/README.md`.
+- `src/styles/site.css` holds the few styles aaif.io has no class for. Use aaif.io's classes everywhere else.
 
 ## Structure
 
@@ -74,12 +68,14 @@ src/
   content.config.ts        schemas for notes and skills (the PR checks)
   content/notes/<wg>/      one Markdown file per note
   content/skills/          one YAML file per skill
-  data/site.ts             aaif.io navigation and footer
+  aaif/                    aaif.io header, menus, footer and CSS (generated)
   data/working-groups.ts   working groups, note labels, skill review levels
-  components/              Header, Footer, cards
+  components/              Header, Footer, heroes, cards, pill, button
   layouts/Base.astro       page shell
   pages/                   home, notes, WG pages, skills, RSS
-  styles/                  tokens and global styles
+  styles/site.css          the few styles aaif.io has no class for
+aaif-capture/              the raw aaif.io capture and the re-capture script
+scripts/                   import-aaif-chrome.mjs
 templates/                 note and skill templates for contributors
 ```
 
