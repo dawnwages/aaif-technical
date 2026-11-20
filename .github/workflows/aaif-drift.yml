@@ -23,6 +23,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
 
 concurrency:
   group: aaif-drift
@@ -109,6 +110,7 @@ jobs:
 
       - name: Open or update the refresh pull request
         if: steps.before.outputs.significant == 'true' || steps.markup.outputs.changed == 'true'
+        continue-on-error: true
         uses: peter-evans/create-pull-request@v7
         with:
           branch: aaif-sync/refresh
@@ -120,6 +122,24 @@ jobs:
           add-paths: |
             aaif-capture/raw/**
             src/aaif/**
+
+      - name: Open or update the drift issue
+        if: steps.before.outputs.significant == 'true' || steps.markup.outputs.chrome == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create aaif-drift --color FF7D2D --description "The subsite has drifted from aaif.io" 2>/dev/null || true
+          {
+            echo "The drift check on $(date -u +%Y-%m-%d) found the subsite out of step with aaif.io."
+            echo
+            cat tests/visual/out/pr-body.md
+          } > tests/visual/out/issue-body.md
+          existing=$(gh issue list --label aaif-drift --state open --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file tests/visual/out/issue-body.md
+          else
+            gh issue create --title "aaif.io style drift detected" --label aaif-drift --body-file tests/visual/out/issue-body.md
+          fi
 
       - name: Fail on significant drift
         if: steps.before.outputs.significant == 'true' || steps.markup.outputs.chrome == 'true'

@@ -90,7 +90,7 @@ The example notes and skills (`example: true`) are placeholders. Remove them bef
 
 1. Builds the site and screenshots its header and footer next to the live aaif.io, at desktop (1440px) and mobile (390px) widths, ignoring the two links this site adds.
 2. Re-captures aaif.io's header, menus, footer and CSS, and rebuilds.
-3. If the screenshots differ by more than 3% of pixels in any region, or aaif.io's captured markup or CSS changed, it opens (or updates) a pull request on `aaif-sync/refresh` with the refreshed capture and a report. Screenshots and pixel diffs are attached to the run.
+3. If the screenshots differ by more than 3% of pixels in any region, or aaif.io's captured markup or CSS changed, it opens (or updates) a pull request on `aaif-sync/refresh` with the refreshed capture and a report, and opens (or comments on) an issue labeled `aaif-drift`. Screenshots and pixel diffs are attached to the run.
 4. If the visual drift is significant, or aaif.io changed its header, menus or footer markup, the run fails so GitHub notifies the repo owner. A CSS-only change opens the pull request without failing.
 
 Run it locally with `npm run build && npm run test:visual`, and refresh the capture with `npm run capture:aaif`.
