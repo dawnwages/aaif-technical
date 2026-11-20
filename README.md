@@ -1,7 +1,7 @@
 # AAIF Technical: Technical Notes and Skills Catalog
 
-[![Build and deploy](https://github.com/dawnwages/aaif-technical/actions/workflows/site.yml/badge.svg)](https://github.com/dawnwages/aaif-technical/actions/workflows/site.yml)
-[![aaif.io style drift](https://github.com/dawnwages/aaif-technical/actions/workflows/aaif-drift.yml/badge.svg)](https://github.com/dawnwages/aaif-technical/actions/workflows/aaif-drift.yml)
+[![Build and deploy](https://github.com/dawnwages/aaif-technical/actions/workflows/site.yml/badge.svg?branch=main)](https://github.com/dawnwages/aaif-technical/actions/workflows/site.yml)
+[![aaif.io style drift](https://github.com/dawnwages/aaif-technical/actions/workflows/aaif-drift.yml/badge.svg?branch=main)](https://github.com/dawnwages/aaif-technical/actions/workflows/aaif-drift.yml)
 
 A self-service, git-tracked site where AAIF working groups publish technical notes, and where AAIF runs the Skills Catalog. It is styled as part of aaif.io (same header, navigation, footer, typeface and palette) so it can be served under aaif.io and added to its Resources menu.
 
