@@ -31,7 +31,10 @@ function absolutize(html) {
     .replace(/ data-airgap-id="[^"]*"/g, '')
     .replace(/ aria-current="page"/g, '')
     // React's generated ids (_r_3_ and the like) change between deploys; keep them stable.
-    .replace(/_r_[0-9a-z]+_/g, '_r_x_');
+    .replace(/_r_[0-9a-z]+_/gi, '_r_x_')
+    // Inline styles that hold an animation's current frame (opacity, transform) differ
+    // from one capture to the next; drop them so only real changes show up.
+    .replace(/ style="[^"]*\b(?:opacity|transform|translate|scale)\b[^"]*"/g, '');
 }
 
 // Header, closed. The wrapper is the fixed bar holding the Linux Foundation strip and the header.
