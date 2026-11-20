@@ -23,6 +23,13 @@ if (existsSync(CAPTURE)) {
   console.log(`Imported ${CAPTURE} (captured ${data.capturedAt})`);
 }
 
+const TRACKING = /^(?:__hstc|__hssc|__hsfp|_hsenc|_hsmi|utm_[a-z]+)$/;
+function stripTracking(url) {
+  const [path, query = ''] = url.split('?');
+  const kept = query.split('&amp;').flatMap((p) => p.split('&')).filter((p) => p && !TRACKING.test(p.split('=')[0]));
+  return kept.length ? `${path}?${kept.join('&amp;')}` : path;
+}
+
 // Make aaif.io-relative links and images absolute, and drop tracking attributes.
 function absolutize(html) {
   return html
@@ -36,8 +43,7 @@ function absolutize(html) {
     // from one capture to the next; drop them so only real changes show up.
     .replace(/ style="[^"]*\b(?:opacity|transform|translate|scale)\b[^"]*"/g, '')
     // aaif.io's HubSpot script adds tracking parameters to some links on each page load.
-    .replace(/([?&])(?:__hstc|__hssc|__hsfp|_hsenc|_hsmi|utm_[a-z]+)=[^&"]*(?:&amp;|&)?/g, '$1')
-    .replace(/[?&](?=")/g, '');
+    .replace(/href="([^"]*\?[^"]*)"/g, (_, url) => `href="${stripTracking(url)}"`);
 }
 
 // Header, closed. The wrapper is the fixed bar holding the Linux Foundation strip and the header.
