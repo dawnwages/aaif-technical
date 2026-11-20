@@ -22,12 +22,12 @@ jobs:
       # For review on GitHub Pages. Set these as repository variables when the site moves to aaif.io.
       SITE_URL: ${{ vars.SITE_URL || format('https://{0}.github.io', github.repository_owner) }}
       BASE_PATH: ${{ vars.BASE_PATH || format('/{0}', github.event.repository.name) }}
+      PROTOTYPE: ${{ vars.PROTOTYPE || 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
       - run: npm ci || npm install
       # Fails the PR if a note or skill is missing required fields, uses an
       # unknown working group, or uses a label it isn't allowed to.

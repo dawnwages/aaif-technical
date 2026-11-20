@@ -13,3 +13,6 @@
 .t-filter[aria-pressed='true'] { background: var(--color-black); color: var(--color-white); border-color: var(--color-black); }
 .t-skip { position: absolute; left: -9999px; }
 .t-skip:focus { left: 1rem; top: 1rem; z-index: 100; background: var(--color-white); padding: 0.5rem 1rem; border-radius: 0.5rem; }
+
+/* Prototype label, shown until PROTOTYPE=false */
+.t-proto { position: fixed; left: 1rem; bottom: 1rem; z-index: 60; margin: 0; padding: 0.4rem 0.8rem; border-radius: 0.5rem; background: var(--color-black); color: var(--color-white); font-size: 0.8125rem; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,.15); }

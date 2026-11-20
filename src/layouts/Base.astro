@@ -10,6 +10,8 @@ const { title, description = 'Technical notes and the skills catalog from the Ag
 // Same title pattern as aaif.io: "Page - Agentic AI Foundation (AAIF)".
 const fullTitle = `${title} - Agentic AI Foundation (AAIF)`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+// Prototype mode (the default) adds noindex and a visible label. Set PROTOTYPE=false when the site goes live on aaif.io.
+const prototype = (import.meta.env.PROTOTYPE ?? process.env.PROTOTYPE ?? 'true') !== 'false';
 ---
 <!doctype html>
 <html lang="en">
@@ -19,6 +21,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="theme-color" content="#000000" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    {prototype && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
@@ -34,5 +37,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <Header />
     <main id="main" class="min-h-screen"><slot /></main>
     <Footer />
+    {prototype && <p class="t-proto" role="note">Prototype for review. Not an official AAIF page.</p>}
   </body>
 </html>

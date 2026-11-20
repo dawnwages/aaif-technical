@@ -49,6 +49,7 @@ To serve under aaif.io, set two repository variables:
 |---|---|---|
 | `SITE_URL` | `https://aaif.io` | The domain the site is served from |
 | `BASE_PATH` | `/technical` | The path the site lives under |
+| `PROTOTYPE` | `false` | Removes the prototype label and the noindex tag (also delete `public/robots.txt`) |
 
 The output in `dist/` is plain static files, so LF IT can also host it behind aaif.io with a path rewrite (for example `aaif.io/technical/*`), or on a subdomain.
 
