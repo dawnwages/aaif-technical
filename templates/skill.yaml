@@ -1,0 +1,16 @@
+# Copy this file to src/content/skills/<short-name>.yaml
+name: "Skill name"
+description: "One sentence on what the skill does."
+source: "https://github.com/<org>/<repo>"     # AAIF links to the source and doesn't host copies
+path: "path/to/SKILL.md"                     # optional, inside the repo
+version: "1.0.0"                             # pin the version you're listing
+license: "Apache-2.0"                        # SPDX identifier
+maintainer:
+  name: "Maintainer Name"
+  org: "Organization"
+  github: "handle"                           # optional
+status: listed                               # new entries start as listed
+# reviewedBy: security-and-privacy           # set by the working group when it reviews the skill
+executable: false                            # true if the skill includes scripts
+tags: []
+added: 2026-12-01

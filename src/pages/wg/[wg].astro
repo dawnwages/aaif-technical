@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import NoteCard from '../../components/NoteCard.astro';
+import { workingGroups } from '../../data/working-groups';
+import { url } from '../../lib/url';
+
+export function getStaticPaths() {
+  return workingGroups.map((wg) => ({ params: { wg: wg.slug }, props: { wg } }));
+}
+
+const { wg } = Astro.props;
+const notes = (await getCollection('notes', ({ data }) => !data.draft && data.wg === wg.slug))
+  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
+---
+<Base title={`${wg.name} technical notes`} description={`Technical notes from the AAIF ${wg.name} working group.`}>
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow"><a href={url('/notes/')}>Technical Notes</a></p>
+      <h1>{wg.name}</h1>
+      <p class="lead">Technical notes published by the {wg.name} working group. <a href={wg.repo}>See the group's repository</a>.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      {notes.length ? <div class="grid">{notes.map((n) => <NoteCard note={n} />)}</div> : <p>This group hasn't published a note yet.</p>}
+    </div>
+  </section>
+</Base>
+<style>.eyebrow a, .lead a { color: inherit; }</style>

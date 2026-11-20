@@ -1,0 +1,57 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { noteLabels, wgName } from '../../data/working-groups';
+import { url, formatDate } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const notes = await getCollection('notes', ({ data }) => !data.draft);
+  return notes.map((note) => ({ params: { slug: note.id }, props: { note } }));
+}
+
+const { note } = Astro.props;
+const d = note.data;
+const { Content } = await render(note);
+const label = noteLabels[d.label];
+---
+<Base title={d.title} description={d.description}>
+  <article>
+    <header class="page-hero">
+      <div class="container">
+        <p class="eyebrow"><a href={url('/notes/')}>Technical Notes</a> / <a href={url(`/wg/${d.wg}/`)}>{wgName(d.wg)}</a></p>
+        <h1>{d.title}</h1>
+        <p class="lead">{d.description}</p>
+        <ul class="chips">
+          <li class={`chip chip-${d.label}`}>{label.name}</li>
+          {d.example && <li class="chip chip-example">Example</li>}
+          {d.tags.map((t) => <li class="chip">{t}</li>)}
+        </ul>
+        <div class="meta byline">
+          <span>By {d.authors.map((a) => `${a.name} (${a.org})`).join(', ')}</span>
+          <span>Published <time datetime={d.published.toISOString()}>{formatDate(d.published)}</time></span>
+          {d.updated && <span>Updated <time datetime={d.updated.toISOString()}>{formatDate(d.updated)}</time></span>}
+        </div>
+      </div>
+    </header>
+
+    <div class="container body">
+      <div class="prose"><Content /></div>
+      <aside>
+        <div class="notice">
+          <p><strong>{label.name}.</strong> {label.help}</p>
+          <p><a href={d.source}>Source in the working group repository</a></p>
+          {d.discussion && <p><a href={d.discussion}>Join the discussion</a></p>}
+        </div>
+      </aside>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .byline { margin-top: var(--space-3); font-size: var(--step-0); }
+  .eyebrow a { color: inherit; }
+  .body { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: var(--space-8); padding-top: var(--space-6); }
+  aside { position: sticky; top: 100px; align-self: start; }
+  aside p:last-child { margin: 0; }
+  @media (max-width: 960px) { .body { grid-template-columns: 1fr; } aside { position: static; order: -1; } }
+</style>

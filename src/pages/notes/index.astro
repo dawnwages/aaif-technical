@@ -1,0 +1,33 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import NoteCard from '../../components/NoteCard.astro';
+import { workingGroups, noteLabels } from '../../data/working-groups';
+import { url } from '../../lib/url';
+
+const notes = (await getCollection('notes', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
+const activeWgs = workingGroups.filter((w) => notes.some((n) => n.data.wg === w.slug));
+---
+<Base title="Technical Notes" description="Technical notes written and published by the AAIF working groups.">
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">Resources</p>
+      <h1>Technical Notes</h1>
+      <p class="lead">Written and published by the AAIF working groups. Each note shows how far it has been reviewed.</p>
+      <ul class="chips legend">
+        {Object.entries(noteLabels).map(([k, v]) => <li class={`chip chip-${k}`} title={v.help}>{v.name}</li>)}
+      </ul>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <nav class="filters" aria-label="Working groups">
+        {activeWgs.map((w) => <a class="chip" href={url(`/wg/${w.slug}/`)}>{w.name}</a>)}
+      </nav>
+      {notes.length ? <div class="grid">{notes.map((n) => <NoteCard note={n} />)}</div> : <p>No notes published yet.</p>}
+    </div>
+  </section>
+</Base>
+
+<style>.legend { margin-top: var(--space-3); }</style>

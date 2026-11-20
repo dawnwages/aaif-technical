@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { skillStatuses, wgName } from '../../data/working-groups';
+import { url, formatDate } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const skills = await getCollection('skills');
+  return skills.map((skill) => ({ params: { slug: skill.id }, props: { skill } }));
+}
+
+const { skill } = Astro.props;
+const d = skill.data;
+const status = skillStatuses[d.status];
+const statusClass = d.status === 'reviewed' ? 'chip-reviewed-skill' : `chip-${d.status}`;
+---
+<Base title={d.name} description={d.description}>
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow"><a href={url('/skills/')}>Skills Catalog</a></p>
+      <h1>{d.name}</h1>
+      <p class="lead">{d.description}</p>
+      <ul class="chips">
+        <li class={`chip ${statusClass}`}>{status.name}</li>
+        {d.executable && <li class="chip">Runs scripts</li>}
+        {d.example && <li class="chip chip-example">Example</li>}
+        {d.tags.map((t) => <li class="chip">{t}</li>)}
+      </ul>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <dl class="facts">
+        <dt>Review status</dt><dd>{status.name}: {status.help}{d.reviewedBy && <> ({wgName(d.reviewedBy)})</>}</dd>
+        <dt>Source</dt><dd><a href={d.source}>{d.source}</a>{d.path && <> · <code>{d.path}</code></>}</dd>
+        <dt>Version</dt><dd>{d.version}</dd>
+        <dt>License</dt><dd>{d.license}</dd>
+        <dt>Maintainer</dt><dd>{d.maintainer.name} ({d.maintainer.org}){d.maintainer.github && <> · <a href={`https://github.com/${d.maintainer.github}`}>@{d.maintainer.github}</a></>}</dd>
+        <dt>Runs scripts</dt><dd>{d.executable ? 'Yes. Read the scripts before you run this skill.' : 'No'}</dd>
+        <dt>Added</dt><dd>{formatDate(d.added)}</dd>
+      </dl>
+      <p class="report">Found a problem with this skill? <a href="https://github.com/aaif">Report it to AAIF</a> and staff can delist it while it's checked.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .eyebrow a { color: inherit; }
+  .facts { display: grid; grid-template-columns: 180px 1fr; gap: 0.75rem var(--space-3); max-width: 52rem; margin: 0; }
+  .facts dt { font-weight: 600; }
+  .facts dd { margin: 0; color: var(--aaif-muted); overflow-wrap: anywhere; }
+  .report { margin-top: var(--space-6); }
+  @media (max-width: 640px) { .facts { grid-template-columns: 1fr; } .facts dd { margin-bottom: var(--space-2); } }
+</style>

@@ -1,0 +1,23 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { skillStatuses } from '../data/working-groups';
+import { url } from '../lib/url';
+interface Props { skill: CollectionEntry<'skills'>; }
+const { skill } = Astro.props;
+const d = skill.data;
+const statusClass = d.status === 'reviewed' ? 'chip-reviewed-skill' : `chip-${d.status}`;
+---
+<a class="card" href={url(`/skills/${skill.id}/`)} data-status={d.status} data-tags={d.tags.join(' ')}>
+  <ul class="chips">
+    <li class={`chip ${statusClass}`}>{skillStatuses[d.status].name}</li>
+    {d.executable && <li class="chip">Runs scripts</li>}
+    {d.example && <li class="chip chip-example">Example</li>}
+  </ul>
+  <h3>{d.name}</h3>
+  <p>{d.description}</p>
+  <div class="meta">
+    <span>{d.maintainer.name} ({d.maintainer.org})</span>
+    <span>v{d.version}</span>
+    <span>{d.license}</span>
+  </div>
+</a>

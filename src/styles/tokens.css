@@ -1,0 +1,55 @@
+/*
+  AAIF design tokens, from https://aaif.io/brand (November 2026).
+  Palette: black, white, coral #FF702D (PANTONE 1645 C), lilac #B6B0D0 (PANTONE 7444 C).
+  Typeface: Instrument Sans. Type scale doubles from 8, 9, 10, 12 and 16.
+  When marketing shares the aaif.io CSS, replace the values here; every component reads from these variables.
+*/
+:root {
+  --aaif-black: #000000;
+  --aaif-white: #ffffff;
+  --aaif-coral: #ff702d;
+  --aaif-lilac: #b6b0d0;
+
+  --aaif-ink: var(--aaif-black);
+  --aaif-paper: var(--aaif-white);
+  --aaif-muted: #5c5c66;
+  --aaif-rule: #e6e4ee;
+  --aaif-surface: #f6f5fa;
+
+  --aaif-header-bg: var(--aaif-black);
+  --aaif-header-ink: var(--aaif-white);
+  --aaif-footer-bg: var(--aaif-black);
+  --aaif-footer-ink: var(--aaif-white);
+  --aaif-footer-muted: #a7a4b8;
+
+  --aaif-font: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --aaif-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  /* Type scale (rem at 16px root): 12, 16, 18, 20, 24, 32, 48, 64 */
+  --step--1: 0.75rem;
+  --step-0: 1rem;
+  --step-1: 1.125rem;
+  --step-2: 1.25rem;
+  --step-3: 1.5rem;
+  --step-4: 2rem;
+  --step-5: 3rem;
+  --step-6: 4rem;
+
+  /* Spacing on the 8px grid */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-6: 3rem;
+  --space-8: 4rem;
+  --space-12: 6rem;
+
+  --radius: 12px;
+  --radius-pill: 999px;
+  --container: 1240px;
+  --gutter: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  :root { --gutter: 1rem; }
+}

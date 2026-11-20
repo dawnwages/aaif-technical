@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import NoteCard from '../components/NoteCard.astro';
+import SkillCard from '../components/SkillCard.astro';
+import { url } from '../lib/url';
+
+const notes = (await getCollection('notes', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
+const skills = (await getCollection('skills')).sort((a, b) => b.data.added.valueOf() - a.data.added.valueOf());
+---
+<Base title="AAIF Technical">
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">Resources</p>
+      <h1>Technical work from the AAIF working groups</h1>
+      <p class="lead">Technical notes written and published by the working groups, and a catalog of agent skills you can find, check and reuse.</p>
+      <p class="actions">
+        <a class="btn btn-coral" href={url('/notes/')}>Read technical notes</a>
+        <a class="btn btn-outline" href={url('/skills/')}>Browse the skills catalog</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="head"><h2>Latest technical notes</h2><a href={url('/notes/')}>All notes</a></div>
+      <div class="grid">{notes.slice(0, 6).map((n) => <NoteCard note={n} />)}</div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container">
+      <div class="head"><h2>Skills catalog</h2><a href={url('/skills/')}>All skills</a></div>
+      <div class="grid">{skills.slice(0, 6).map((s) => <SkillCard skill={s} />)}</div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
+  .head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); margin-bottom: var(--space-4); }
+  .head h2 { margin: 0; }
+  .head a { font-weight: 600; text-decoration-color: var(--aaif-coral); text-underline-offset: 4px; }
+  .alt { background: var(--aaif-surface); }
+</style>

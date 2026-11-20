@@ -1,0 +1,21 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { noteLabels, wgName } from '../data/working-groups';
+import { url, formatDate } from '../lib/url';
+interface Props { note: CollectionEntry<'notes'>; }
+const { note } = Astro.props;
+const d = note.data;
+---
+<a class="card" href={url(`/notes/${note.id}/`)}>
+  <ul class="chips">
+    <li class={`chip chip-${d.label}`}>{noteLabels[d.label].name}</li>
+    <li class="chip">{wgName(d.wg)}</li>
+    {d.example && <li class="chip chip-example">Example</li>}
+  </ul>
+  <h3>{d.title}</h3>
+  <p>{d.description}</p>
+  <div class="meta">
+    <span>{d.authors.map((a) => a.name).join(', ')}</span>
+    <time datetime={d.published.toISOString()}>{formatDate(d.published)}</time>
+  </div>
+</a>

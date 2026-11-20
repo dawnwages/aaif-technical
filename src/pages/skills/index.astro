@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import SkillCard from '../../components/SkillCard.astro';
+import { skillStatuses } from '../../data/working-groups';
+
+const skills = (await getCollection('skills')).sort((a, b) => a.data.name.localeCompare(b.data.name));
+---
+<Base title="Skills Catalog" description="A vendor-neutral catalog of agent skills in the Agent Skills format, with review status and maintainers.">
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">Resources</p>
+      <h1>Skills Catalog</h1>
+      <p class="lead">Agent skills in the Agent Skills format. Every entry links to its source and shows who maintains it and how far it has been reviewed.</p>
+      <div class="notice">
+        <strong>Check before you run.</strong> Skills can include scripts and instructions your agent will follow. A <strong>Listed</strong> skill has passed automated checks only and has not been reviewed by AAIF or a working group.
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div class="filters" role="group" aria-label="Filter by review status">
+        <button class="chip active" data-filter="all">All</button>
+        {Object.entries(skillStatuses).map(([k, v]) => <button class="chip" data-filter={k} title={v.help}>{v.name}</button>)}
+      </div>
+      <div class="grid" id="skills">{skills.map((s) => <SkillCard skill={s} />)}</div>
+      <p class="submit">To add a skill, open a pull request with one YAML file in <code>src/content/skills/</code>. See the template in the repository.</p>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = document.querySelectorAll<HTMLElement>('#skills [data-status]');
+  buttons.forEach((b) => b.addEventListener('click', () => {
+    buttons.forEach((x) => x.classList.toggle('active', x === b));
+    const f = b.dataset.filter;
+    cards.forEach((c) => { c.hidden = f !== 'all' && c.dataset.status !== f; });
+  }));
+</script>
+
+<style>
+  .notice { margin-top: var(--space-4); max-width: 46rem; }
+  button.chip { cursor: pointer; font-family: inherit; }
+  button.chip.active { background: var(--aaif-ink); color: var(--aaif-paper); border-color: var(--aaif-ink); }
+  .submit { margin-top: var(--space-6); color: var(--aaif-muted); }
+</style>

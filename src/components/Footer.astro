@@ -1,0 +1,55 @@
+---
+// Matches the aaif.io footer: logo, social links, Explore / Get Involved / Resources, newsletter, legal.
+import { logo, social, footerColumns, newsletter, legal } from '../data/site';
+import { link } from '../lib/url';
+---
+<footer class="site-footer">
+  <div class="container">
+    <div class="top">
+      <div class="brand">
+        <a class="logo" href={logo.href}><img src={logo.src} alt="Agentic AI Solution Logo" width="166" height="40" loading="lazy" /></a>
+        <ul class="social">
+          {social.map((s) => <li><a href={s.href} rel="noopener" target="_blank">{s.label}</a></li>)}
+        </ul>
+      </div>
+
+      {footerColumns.map((col) => (
+        <div class="col">
+          <h2>{col.heading}</h2>
+          <ul>{col.links.map((l) => <li><a href={link(l.href, l.internal)}>{l.label}</a></li>)}</ul>
+        </div>
+      ))}
+
+      <div class="col newsletter">
+        <h2>{newsletter.heading}</h2>
+        <p>{newsletter.text}</p>
+        <a class="btn btn-coral" href={newsletter.href}>{newsletter.button}</a>
+      </div>
+    </div>
+
+    <div class="legal">
+      <p>{legal.copyright} {legal.trademark} {legal.policiesLead} <a href={legal.policiesHref}>Policies</a> page.</p>
+      <p class="lf">The Linux Foundation</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { background: var(--aaif-footer-bg); color: var(--aaif-footer-ink); padding: var(--space-12) 0 var(--space-4); }
+  .top { display: grid; gap: var(--space-6); grid-template-columns: 1.4fr repeat(3, 1fr) 1.4fr; }
+  .logo { display: inline-flex; }
+  .logo img { height: 40px; width: auto; }
+  .social { list-style: none; padding: 0; margin: var(--space-3) 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; }
+  h2 { font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.08em; color: var(--aaif-footer-muted); margin-bottom: var(--space-2); font-weight: 600; }
+  .col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.55rem; }
+  a { color: inherit; text-decoration: none; }
+  .col a:hover, .social a:hover { color: var(--aaif-coral); }
+  .newsletter p { color: var(--aaif-footer-muted); }
+  .newsletter .btn { color: var(--aaif-black); }
+  .legal { border-top: 1px solid #2a2a2e; margin-top: var(--space-8); padding-top: var(--space-3); display: flex; gap: var(--space-4); justify-content: space-between; align-items: flex-start; }
+  .legal p { font-size: var(--step--1); color: var(--aaif-footer-muted); max-width: 60rem; margin: 0; }
+  .legal a { text-decoration: underline; }
+  .lf { white-space: nowrap; font-weight: 600; color: var(--aaif-footer-ink) !important; }
+  @media (max-width: 1080px) { .top { grid-template-columns: repeat(3, 1fr); } .brand, .newsletter { grid-column: span 3; } }
+  @media (max-width: 640px) { .top { grid-template-columns: 1fr 1fr; } .brand, .newsletter { grid-column: span 2; } .legal { flex-direction: column; } }
+</style>

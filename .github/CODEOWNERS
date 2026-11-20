@@ -1,0 +1,21 @@
+# Each working group's chairs approve notes in their own folder.
+# Replace the placeholder team names with real GitHub teams or handles.
+
+*                                                           @aaif/technical-site-maintainers
+
+/src/content/notes/accuracy-and-reliability/                @aaif/wg-accuracy-and-reliability-chairs
+/src/content/notes/agentic-commerce/                        @aaif/wg-agentic-commerce-chairs
+/src/content/notes/governance-risk-and-regulatory/          @aaif/wg-governance-risk-and-regulatory-chairs
+/src/content/notes/identity-and-trust/                      @aaif/wg-identity-and-trust-chairs
+/src/content/notes/observability-and-traceability/          @aaif/wg-observability-and-traceability-chairs
+/src/content/notes/security-and-privacy/                    @aaif/wg-security-and-privacy-chairs
+/src/content/notes/taxonomy-landscape/                      @aaif/ws-taxonomy-landscape-chairs
+/src/content/notes/workflows-and-process-integration/       @aaif/wg-workflows-and-process-integration-chairs
+
+# New catalog entries go through AAIF staff; reviewed entries also need the reviewing WG.
+/src/content/skills/                                        @aaif/technical-site-maintainers
+
+# Look and navigation belong with the aaif.io maintainers.
+/src/components/                                            @aaif/technical-site-maintainers
+/src/styles/                                                @aaif/technical-site-maintainers
+/src/data/site.ts                                           @aaif/technical-site-maintainers

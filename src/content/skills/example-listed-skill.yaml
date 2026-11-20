@@ -1,0 +1,16 @@
+# Example entry. Replace with a real skill before launch.
+name: "Release notes drafter (example)"
+description: "Example of a community skill that has passed automated checks but has not been reviewed."
+source: "https://github.com/example-org/example-skills"
+path: "release-notes/SKILL.md"
+version: "1.2.0"
+license: "MIT"
+maintainer:
+  name: "Example Maintainer"
+  org: "Example Org"
+  github: "example-maintainer"
+status: listed
+executable: true
+tags: ["docs"]
+added: 2026-11-18
+example: true
