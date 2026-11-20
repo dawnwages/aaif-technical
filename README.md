@@ -2,6 +2,8 @@
 
 A self-service, git-tracked site where AAIF working groups publish technical notes, and where AAIF runs the Skills Catalog. It is styled as part of aaif.io (same header, navigation, footer, typeface and palette) so it can be served under aaif.io and added to its Resources menu.
 
+Live prototype: https://dawnwages.github.io/aaif-technical/ (labeled as a prototype and hidden from search engines)
+
 Proposals:
 - [AAIF Technical Notes: self-service publishing for WG output](https://docs.google.com/document/d/1B0WZrOLmcQlJCH236vDUodfI6S6UlXSFhsf1_1LjKWA/edit)
 - [AAIF Skills Catalog](https://docs.google.com/document/d/1Y9rf3D5I9V33C_0TgGuA8Jr-vVmEloriwqnSEFvjXRQ/edit)
