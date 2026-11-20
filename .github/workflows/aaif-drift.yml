@@ -1,0 +1,126 @@
+name: aaif.io style drift
+
+# Checks that the subsite still looks like aaif.io. Every Monday (and on demand)
+# it compares the subsite's header and footer with the live aaif.io, pixel by
+# pixel, re-captures aaif.io, and if anything has drifted it opens a pull
+# request with the refreshed capture. Significant drift also fails the run, so
+# GitHub sends a failure notification.
+
+on:
+  schedule:
+    - cron: '17 13 * * 1'   # Mondays, 13:17 UTC
+  workflow_dispatch:
+    inputs:
+      threshold:
+        description: Share of differing pixels per region that counts as significant (0.03 = 3%)
+        default: '0.03'
+  push:
+    branches: [main]
+    paths:
+      - 'tests/visual/**'
+      - '.github/workflows/aaif-drift.yml'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: aaif-drift
+  cancel-in-progress: false
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    env:
+      SITE_URL: http://localhost
+      BASE_PATH: /technical
+      PROTOTYPE: 'false'
+      DRIFT_THRESHOLD: ${{ inputs.threshold || '0.03' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+
+      - name: Build the site as committed
+        run: npm run build
+
+      - name: Compare with live aaif.io
+        id: before
+        env:
+          NO_FAIL: '1'
+        run: node tests/visual/compare.mjs before
+
+      - name: Re-capture aaif.io
+        run: node tests/visual/capture-live.mjs && node scripts/import-aaif-chrome.mjs
+
+      - name: Check whether aaif.io's markup or CSS changed
+        id: markup
+        run: |
+          if git diff --quiet -- src/aaif; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "chrome=false" >> "$GITHUB_OUTPUT"
+            echo "No change in aaif.io's captured header, footer or CSS." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            if git diff --quiet -- src/aaif/header.html src/aaif/footer.html src/aaif/panel-about.html src/aaif/panel-resources.html src/aaif/mobile-menu.html; then
+              echo "chrome=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "chrome=true" >> "$GITHUB_OUTPUT"
+            fi
+            { echo '### Changed in the capture'; echo '```'; git diff --stat -- src/aaif; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Rebuild with the refreshed capture and compare again
+        id: after
+        if: steps.markup.outputs.changed == 'true'
+        env:
+          NO_FAIL: '1'
+        run: npm run build && node tests/visual/compare.mjs after
+
+      - name: Upload screenshots and diffs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aaif-drift-${{ github.run_id }}
+          path: tests/visual/out
+          if-no-files-found: ignore
+
+      - name: Write the pull request description
+        if: steps.before.outputs.significant == 'true' || steps.markup.outputs.changed == 'true'
+        run: |
+          {
+            echo "The weekly check found that the subsite has drifted from aaif.io."
+            echo
+            echo "- Visual drift before refresh: **${{ steps.before.outputs.significant == 'true' && 'yes' || 'no' }}**"
+            echo "- aaif.io's captured markup or CSS changed: **${{ steps.markup.outputs.changed }}** (header, menus or footer markup: **${{ steps.markup.outputs.chrome }}**)"
+            echo
+            cat tests/visual/out/before-report.md
+            [ -f tests/visual/out/after-report.md ] && cat tests/visual/out/after-report.md
+            echo
+            echo "This PR updates \`aaif-capture/raw/\` and \`src/aaif/\` from the live site. Screenshots and pixel diffs: [run artifacts](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})."
+            echo
+            echo "Before merging, check the preview build, and that Technical Notes and Skills Catalog are still in the Resources menu and footer. If aaif.io changed the shape of its header, \`src/components/Header.astro\` may need a change too."
+          } > tests/visual/out/pr-body.md
+
+      - name: Open or update the refresh pull request
+        if: steps.before.outputs.significant == 'true' || steps.markup.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: aaif-sync/refresh
+          delete-branch: true
+          title: 'aaif.io style drift: refresh the captured header, footer and CSS'
+          commit-message: Refresh the aaif.io capture
+          body-path: tests/visual/out/pr-body.md
+          labels: aaif-drift
+          add-paths: |
+            aaif-capture/raw/**
+            src/aaif/**
+
+      - name: Fail on significant drift
+        if: steps.before.outputs.significant == 'true' || steps.markup.outputs.chrome == 'true'
+        run: |
+          echo "::error title=aaif.io style drift::The subsite's header or footer no longer matches aaif.io. A refresh pull request is open on aaif-sync/refresh."
+          exit 1

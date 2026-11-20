@@ -4,3 +4,4 @@ dist/
 .DS_Store
 .env
 aaif-capture/imported-*.json
+tests/visual/out/

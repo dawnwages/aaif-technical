@@ -8,7 +8,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check && astro build"
+    "check": "astro check && astro build",
+    "test:visual": "node tests/visual/compare.mjs local",
+    "capture:aaif": "node tests/visual/capture-live.mjs && node scripts/import-aaif-chrome.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.11",
@@ -16,7 +18,10 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
-    "typescript": "^5.6.0"
+    "typescript": "^5.6.0",
+    "playwright": "^1.48.0",
+    "pixelmatch": "^6.0.0",
+    "pngjs": "^7.0.0"
   },
   "engines": {
     "node": ">=20"
