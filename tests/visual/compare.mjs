@@ -20,6 +20,14 @@ const AAIF_URL = process.env.AAIF_URL ?? 'https://aaif.io/blog';
 const THRESHOLD = Number(process.env.DRIFT_THRESHOLD ?? 0.03);
 const BASE = (process.env.BASE_PATH ?? '/technical').replace(/\/$/, '');
 const OUT = 'tests/visual/out';
+const SIZE_TOLERANCE = Number(process.env.SIZE_TOLERANCE ?? 2);
+
+function crop(png, w, h) {
+  if (png.width === w && png.height === h) return png;
+  const out = new PNG({ width: w, height: h });
+  PNG.bitblt(png, out, 0, 0, w, h, 0, 0);
+  return out;
+}
 mkdirSync(OUT, { recursive: true });
 
 // Serve dist/ under BASE, the way it will be served on aaif.io.
@@ -72,17 +80,22 @@ try {
       const id = `${label}-${vp.name}-${region.name}`;
       writeFileSync(`${OUT}/${id}-aaif.png`, PNG.sync.write(a));
       writeFileSync(`${OUT}/${id}-ours.png`, PNG.sync.write(b));
-      if (a.width !== b.width || a.height !== b.height) {
+      // A pixel or two of height comes from font rounding; more than that is a real layout change.
+      const dw = Math.abs(a.width - b.width), dh = Math.abs(a.height - b.height);
+      if (dw > SIZE_TOLERANCE || dh > SIZE_TOLERANCE) {
         rows.push({ vp: vp.name, region: region.name, ratio: 1, note: `size differs: aaif.io ${a.width}x${a.height}, ours ${b.width}x${b.height}` });
         significant = true;
         continue;
       }
-      const diff = new PNG({ width: a.width, height: a.height });
-      const n = pixelmatch(a.data, b.data, diff.data, a.width, a.height, { threshold: 0.1 });
+      const w = Math.min(a.width, b.width), h = Math.min(a.height, b.height);
+      const ca = crop(a, w, h), cb = crop(b, w, h);
+      const diff = new PNG({ width: w, height: h });
+      const n = pixelmatch(ca.data, cb.data, diff.data, w, h, { threshold: 0.1 });
       writeFileSync(`${OUT}/${id}-diff.png`, PNG.sync.write(diff));
-      const ratio = n / (a.width * a.height);
+      const ratio = n / (w * h);
       if (ratio > THRESHOLD) significant = true;
-      rows.push({ vp: vp.name, region: region.name, ratio, note: `${n} of ${a.width * a.height} pixels` });
+      const sizeNote = dw || dh ? ` (sizes differ by ${dw}x${dh}px, compared the overlap)` : '';
+      rows.push({ vp: vp.name, region: region.name, ratio, note: `${n} of ${w * h} pixels${sizeNote}` });
     }
   }
 } finally {
