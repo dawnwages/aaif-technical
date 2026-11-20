@@ -65,6 +65,7 @@ jobs:
             echo "No change in aaif.io's captured header, footer or CSS." >> "$GITHUB_STEP_SUMMARY"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
+            mkdir -p tests/visual/out && git diff -- src/aaif > tests/visual/out/capture.diff
             if git diff --quiet -- src/aaif/header.html src/aaif/footer.html src/aaif/panel-about.html src/aaif/panel-resources.html src/aaif/mobile-menu.html; then
               echo "chrome=false" >> "$GITHUB_OUTPUT"
             else
